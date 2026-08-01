@@ -6,7 +6,6 @@ import {
   Mail,
   ExternalLink,
   ChevronDown,
-  GraduationCap,
   Wallet,
   Shirt,
   Terminal,
@@ -31,12 +30,11 @@ const NAV_LINKS = [
 ];
 
 const FACTS = [
-  { label: "College", value: "BITS Pilani" },
-  { label: "Year", value: "2nd Year, Sophomore" },
-  { label: "Track", value: "Computer Science" },
-  { label: "Focus", value: "Full-Stack + AI Systems" },
-  { label: "Learning now", value: "Swift, Advanced Python, System Design" },
-  { label: "Status", value: "Open to internships & collabs" },
+  { label: "flavor", value: "Full-Stack + AI" },
+  { label: "bake time", value: "2nd year @ BITS Pilani" },
+  { label: "sprinkles", value: "Swift · Python · System Design" },
+  { label: "filling", value: "Web apps & AI products" },
+  { label: "freshness", value: "Open to internships & collabs" },
 ];
 
 const PROJECTS = [
@@ -114,10 +112,6 @@ const PROJECTS = [
 
 const ACCENT_COLORS = { pink: "#FF8FAB", gold: "#E8A93B", mint: "#8FE3C4" };
 const CARD_DRIPS = [10, 14, 8, 16, 12, 9, 15, 11, 13, 7, 12, 10];
-const ABOUT_DRIPS = [
-  [22, 10], [34, 12], [16, 9], [40, 13], [26, 10], [18, 9], [36, 12],
-  [28, 11], [20, 9], [32, 12], [24, 10], [15, 9], [38, 13], [22, 10],
-];
 const DECOR_SPRINKLES = Array.from({ length: 10 }, (_, i) => ({
   left: `${(i * 9.7 + 4) % 96}%`,
   top: `${(i * 5.3) % 80 + 8}%`,
@@ -361,8 +355,6 @@ function Donut3D({ size = 260, className = "", style = {}, split = 0, onClick })
 
   return (
     <div
-      ref={mountRef}
-      className={className}
       role="button"
       tabIndex={0}
       aria-label="Open the donut"
@@ -373,8 +365,16 @@ function Donut3D({ size = 260, className = "", style = {}, split = 0, onClick })
           onClick();
         }
       }}
-      style={{ width: size, height: size, cursor: "pointer", ...style }}
-    />
+      className={className}
+      style={{ position: "relative", width: size, height: size, cursor: "pointer", ...style }}
+    >
+      <div ref={mountRef} style={{ width: size, height: size }} />
+      {split <= 0 && (
+        <span className="donut-hint" aria-hidden="true">
+          click me
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -382,115 +382,362 @@ function Donut3D({ size = 260, className = "", style = {}, split = 0, onClick })
 /*  Tilt card — the "3D" project cards                                 */
 /* ------------------------------------------------------------------ */
 
-function ProjectBox({ project }) {
-  const cardRef = useRef(null);
-  const [transform, setTransform] = useState("");
-  const [glow, setGlow] = useState({ x: 50, y: 50, on: false });
-  const Icon = project.icon;
-
-  const handleMove = (e) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    const rotY = (px - 0.5) * 14;
-    const rotX = (0.5 - py) * 14;
-    setTransform(
-      `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(10px)`
-    );
-    setGlow({ x: px * 100, y: py * 100, on: true });
-  };
-
-  const handleLeave = () => {
-    setTransform("perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px)");
-    setGlow((g) => ({ ...g, on: false }));
-  };
-
+// a single project served as a glazed donut — icon in the hole, name on the box
+function ProjectDonut({ accent, size = 132, Icon }) {
+  const sprinkles = [
+    { x: 52, y: 56, r: 0.32, c: "#ffffff" },
+    { x: 136, y: 46, r: -0.35, c: "#F9F871" },
+    { x: 160, y: 104, r: 0.5, c: "#8FE3C4" },
+    { x: 46, y: 140, r: -0.6, c: "#845EC2" },
+    { x: 118, y: 158, r: 0.2, c: "#FFC75F" },
+  ];
   return (
-    <div
-      ref={cardRef}
-      className={`project-card accent-${project.accent}`}
-      style={{ "--accent": ACCENT_COLORS[project.accent], transform: transform || undefined }}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-    >
-      <div
-        className="card-glow"
-        style={{
-          opacity: glow.on ? 1 : 0,
-          background: `radial-gradient(circle at ${glow.x}% ${glow.y}%, rgba(255,255,255,0.16), transparent 60%)`,
-        }}
-      />
-      <div className="card-icing">
-        <DonutBadge icing={ACCENT_COLORS[project.accent]} size={42} />
-        <h3 className="card-title">{project.name}</h3>
-        <div className="card-icing-drips" aria-hidden="true">
-          {CARD_DRIPS.map((h, i) => (
-            <span key={i} style={{ height: h }} />
-          ))}
-        </div>
-      </div>
-      <div className="card-body">
-        <div className="card-top">
-          <div className="card-icon">
-            <Icon size={18} strokeWidth={2} />
-          </div>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="card-link"
-            aria-label={`Open ${project.name} on GitHub`}
-          >
-            <ExternalLink size={16} />
-          </a>
-        </div>
-        <p className="card-tag">{project.tag}</p>
-        <p className="card-desc">{project.desc}</p>
-        <div className="card-stack">
-          {project.stack.map((s) => (
-            <span key={s} className="chip">
-              {s}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
+    <svg width={size} height={size} viewBox="0 0 200 200" className="project-donut" aria-hidden="true">
+      <circle cx="100" cy="100" r="96" fill="#C8915C" stroke="#3a2418" strokeWidth="3" />
+      <circle cx="100" cy="100" r="84" fill="#B98350" />
+      <circle cx="100" cy="100" r="84" fill={accent} opacity="0.95" />
+      {/* icing drips hanging off the bottom edge */}
+      <circle cx="40" cy="170" r="9" fill={accent} />
+      <circle cx="62" cy="180" r="10" fill={accent} />
+      <circle cx="90" cy="187" r="12" fill={accent} />
+      <circle cx="122" cy="183" r="10" fill={accent} />
+      <circle cx="148" cy="172" r="9" fill={accent} />
+      {/* glossy highlight */}
+      <ellipse cx="72" cy="68" rx="26" ry="12" fill="rgba(255,255,255,0.35)" transform="rotate(-30 72 68)" />
+      {/* the hole */}
+      <circle cx="100" cy="100" r="48" fill="#1B120C" />
+      {/* sprinkles on the glaze */}
+      {sprinkles.map((s, i) => (
+        <rect
+          key={i}
+          x={s.x}
+          y={s.y}
+          width="9"
+          height="4.5"
+          rx="2.2"
+          fill={s.c}
+          transform={`rotate(${s.r * 57.3} ${s.x + 4.5} ${s.y + 2.25})`}
+        />
+      ))}
+    </svg>
   );
 }
 
-// one project on the timeline — slides in as it scrolls into view
-function TimelineItem({ project, index }) {
-  const itemRef = useRef(null);
-  const [visible, setVisible] = useState(false);
+// menu book — open it like a book, one project per page, order slips onto the receipt
+const MENU_PRICES = [3.5, 4.0, 3.25, 4.5, 3.0, 4.25, 3.75];
+const BURST_SPRINKLES = Array.from({ length: 16 }, (_, i) => {
+  const ang = (i / 16) * Math.PI * 2;
+  const dist = 80 + (i % 3) * 30;
+  return {
+    "--dx": `${Math.cos(ang) * dist}px`,
+    "--dy": `${Math.sin(ang) * dist - 46}px`,
+    "--rot": `${(i % 2 ? 1 : -1) * (150 + i * 22)}deg`,
+    "--c": ["#FF8FAB", "#E8A93B", "#8FE3C4", "#F9F871"][i % 4],
+    animationDelay: `${(i % 5) * 0.035}s`,
+  };
+});
 
-  useEffect(() => {
-    const el = itemRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            obs.disconnect();
-          }
-        });
-      },
-      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+function MenuBook({ projects }) {
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [turning, setTurning] = useState(null);
+  const [cart, setCart] = useState(projects.map(() => 0));
+  const [paid, setPaid] = useState(false);
+  const [receiptNo, setReceiptNo] = useState(7);
+  const turnTimer = useRef(null);
+  const touchX = useRef(null);
 
-  const side = index % 2 === 0 ? "left" : "right";
+  const proj = projects[page];
+  const Icon = proj.icon;
+  const count = cart.reduce((a, b) => a + b, 0);
+  const subtotal = projects.reduce((s, p, i) => s + MENU_PRICES[i] * cart[i], 0);
+  const tax = subtotal * 0.18;
+  const total = subtotal + tax;
+
+  useEffect(() => () => window.clearTimeout(turnTimer.current), []);
+
+  const add = () =>
+    setCart((c) => c.map((v, idx) => (idx === page ? v + 1 : v)));
+  const removeItem = (i) =>
+    setCart((c) => c.map((v, idx) => (idx === i ? Math.max(0, v - 1) : v)));
+  const remove = () => removeItem(page);
+  const flip = (dir) => {
+    if (turning) return;
+    const next = Math.min(projects.length - 1, Math.max(0, page + dir));
+    if (next === page) return;
+    setTurning(dir);
+    turnTimer.current = window.setTimeout(() => {
+      setPage(next);
+      setTurning(null);
+    }, 430);
+  };
+  const onTouchStart = (e) => {
+    if (e.target.closest("button, a")) return;
+    touchX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e) => {
+    if (touchX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    touchX.current = null;
+    if (Math.abs(dx) > 55) flip(dx < 0 ? 1 : -1);
+  };
+  const checkout = () => {
+    if (count > 0 && !paid) {
+      setPaid(true);
+      setReceiptNo((n) => n + 1);
+    }
+  };
+  const startOver = () => {
+    setCart(projects.map(() => 0));
+    setPaid(false);
+  };
+
+  const date = new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const time = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 
   return (
-    <div ref={itemRef} className={`timeline-item ${side} ${visible ? "is-visible" : ""}`}>
-      <div className="timeline-dot">
-        <DonutBadge icing={ACCENT_COLORS[project.accent]} size={36} />
+    <div className="menubook-wrap">
+      <div className={`menubook ${open ? "open" : ""}`}>
+        <div
+          className="menubook-cover"
+          onClick={() => setOpen(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
+          aria-label="Open the menu book"
+        >
+          <div className="cover-face cover-front">
+            <span className="cover-donut">
+              <ProjectDonut accent="#FF8FAB" size={110} Icon={Sparkles} />
+            </span>
+            <span className="cover-title">dough &amp; dev</span>
+            <span className="cover-sub">a menu of {projects.length} hand-baked flavours</span>
+            <button
+              className="btn btn-primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(true);
+              }}
+            >
+              explore menu
+            </button>
+            <span className="cover-hint">click the book to open it</span>
+          </div>
+          <div className="cover-face cover-back">
+            <span className="cover-back-title">dough &amp; dev</span>
+            <span className="cover-back-hint">flavour of the day: whatever you pick</span>
+          </div>
+        </div>
+
+        <div className="menubook-spread">
+          <div
+            className="page page-left"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="page-head">
+              <span className="page-label">menu</span>
+              <span className="page-count">
+                {page + 1} / {projects.length}
+              </span>
+            </div>
+            <div
+              className={`page-proj ${turning ? (turning === 1 ? "turning-next" : "turning-prev") : ""}`}
+              key={page}
+            >
+              <span className="page-donut">
+                <ProjectDonut accent={ACCENT_COLORS[proj.accent]} size={96} Icon={Icon} />
+                <span className="page-donut-icon">
+                  <Icon size={18} strokeWidth={2.2} />
+                </span>
+              </span>
+              <h3 className="page-name">{proj.name}</h3>
+              <p className="page-tag">{proj.tag}</p>
+              <p className="page-desc">{proj.desc}</p>
+              <div className="page-stack">
+                {proj.stack.map((s) => (
+                  <span key={s} className="chip dark">
+                    {s}
+                  </span>
+                ))}
+              </div>
+              <div className="page-order-row">
+                <span className="page-price">${MENU_PRICES[page].toFixed(2)}</span>
+                {cart[page] === 0 ? (
+                  <button className="page-add" onClick={add} aria-label={`Add ${proj.name} to order`}>
+                    + add to cart
+                  </button>
+                ) : (
+                  <div className="stepper">
+                    <button onClick={remove} aria-label={`Remove one ${proj.name}`}>
+                      −
+                    </button>
+                    <span className="stepper-n">{cart[page]}</span>
+                    <button onClick={add} aria-label={`Add one ${proj.name}`}>
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="page-nav">
+              <button onClick={() => flip(-1)} disabled={page === 0} aria-label="previous project">
+                ← prev
+              </button>
+              <button
+                onClick={() => flip(1)}
+                disabled={page === projects.length - 1}
+                aria-label="next project"
+              >
+                next →
+              </button>
+            </div>
+            <div className="page-foot">
+              <span>— {page + 1} —</span>
+            </div>
+          </div>
+
+          <div className="page page-right">
+            <div className="page-head">
+              <span className="page-label">your order</span>
+              <span className={`page-count ${count > 0 ? "bump" : ""}`} key={count}>
+                {count > 0 ? `${count} item${count > 1 ? "s" : ""}` : ""}
+              </span>
+            </div>
+            <div className={`order-slip ${count > 0 ? "pop" : ""}`} key={count > 0 ? "pop" : "empty"}>
+              {count === 0 ? (
+                <p className="order-empty">add a flavour on the left and your receipt pops up here</p>
+              ) : (
+                <>
+                  {paid && <p className="order-paid-note">paid ✓ — grab your treats</p>}
+                  <div className="order-items">
+                    {projects.map(
+                      (p, i) =>
+                        cart[i] > 0 && (
+                          <div className={`order-row ${paid ? "ready" : ""}`} key={p.key}>
+                            <div className="r-line">
+                              <span className="r-qty">x{cart[i]}</span>
+                              <span className="r-name">{p.name}</span>
+                              <span className="r-price">${(MENU_PRICES[i] * cart[i]).toFixed(2)}</span>
+                              {!paid && (
+                                <button
+                                  className="r-remove"
+                                  onClick={() => removeItem(i)}
+                                  aria-label={`Remove one ${p.name}`}
+                                >
+                                  ×
+                                </button>
+                              )}
+                            </div>
+                            <div className="r-stack">{p.stack.join(" · ")}</div>
+                            {paid && (
+                              <a
+                                className="r-link"
+                                href={p.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Open ${p.name} on GitHub`}
+                              >
+                                open on github <ExternalLink size={10} />
+                              </a>
+                            )}
+                          </div>
+                        )
+                    )}
+                  </div>
+                  <div className="order-totals">
+                    <div className="rt-row">
+                      <span>subtotal</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="rt-row">
+                      <span>gst (18%)</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="rt-row rt-total">
+                      <span>total</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <p className="order-meta">
+                    {date} · {time} · #{String(receiptNo).padStart(2, "0")}
+                  </p>
+                  {paid && <span className="paid-stamp">PAID</span>}
+                </>
+              )}
+            </div>
+            <div className="page-checkout">
+              {paid ? (
+                <button className="btn btn-primary" onClick={startOver}>
+                  order again
+                </button>
+              ) : (
+                <button className="btn btn-primary" onClick={checkout} disabled={count === 0}>
+                  checkout · ${total.toFixed(2)}
+                </button>
+              )}
+            </div>
+            <div className="page-foot">
+              <span>· dough &amp; dev ·</span>
+            </div>
+          </div>
+        </div>
+
+        {paid && (
+          <div className="burst" aria-hidden="true">
+            {BURST_SPRINKLES.map((s, i) => (
+              <span key={i} style={s} />
+            ))}
+          </div>
+        )}
       </div>
-      <ProjectBox project={project} />
+
+      {open && (
+        <button className="close-book" onClick={() => setOpen(false)}>
+          close book
+        </button>
+      )}
+
+      {paid && (
+        <div className="order-tray" role="list" aria-label="Ordered projects">
+          <div className="tray-head">
+            <span className="tray-title">your order tray</span>
+            <span className="tray-sub">{count} treat{count > 1 ? "s" : ""} · tap to open</span>
+          </div>
+          <div className="tray-row">
+            {projects.map(
+              (p, i) =>
+                cart[i] > 0 && (
+                  <a
+                    key={p.key}
+                    className="tray-item"
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ "--accent": ACCENT_COLORS[p.accent] }}
+                    aria-label={`Open ${p.name} on GitHub`}
+                  >
+                    <span className="tray-donut">
+                      <ProjectDonut accent={ACCENT_COLORS[p.accent]} size={44} Icon={p.icon} />
+                    </span>
+                    <span className="tray-name">{p.name}</span>
+                    <span className="tray-open">
+                      open <ExternalLink size={9} />
+                    </span>
+                  </a>
+                )
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
