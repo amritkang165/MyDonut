@@ -122,6 +122,259 @@ const DECOR_SPRINKLES = Array.from({ length: 10 }, (_, i) => ({
 }));
 
 /* ------------------------------------------------------------------ */
+/*  3D Donut — used full-size on the intro screen, mini in the navbar  */
+/* ------------------------------------------------------------------ */
+
+const SPRINKLE_COLORS = [0xff6f91, 0xffc75f, 0x8fe3c4, 0x845ec2, 0xf9f871, 0xffffff];
+
+// flying sprinkles and dripping cream that burst out during the split-open reveal
+const CREAM_FLIES = Array.from({ length: 16 }, (_, i) => {
+  const ang = (i / 16) * Math.PI * 2 + 0.35;
+  const dist = 24 + (i % 6) * 9;
+  return {
+    left: `${50 + Math.cos(ang) * 5}%`,
+    top: `${50 + Math.sin(ang) * 5}%`,
+    width: `${5 + (i % 4) * 2}px`,
+    height: `${5 + (i % 4) * 2}px`,
+    background: ["#FF8FAB", "#FFC75F", "#8FE3C4", "#845EC2", "#F9F871", "#FFF8EE"][i % 6],
+    "--dx": `${Math.cos(ang) * dist}vmax`,
+    "--dy": `${Math.sin(ang) * dist}vmax`,
+    "--rot": `${(i % 2 ? 1 : -1) * (140 + i * 30)}deg`,
+    animationDelay: `${(i % 4) * 0.06}s`,
+    animationDuration: `${0.8 + (i % 3) * 0.28}s`,
+  };
+});
+
+// cream that runs down the glass as the flood drains — each drip hangs,
+// stretches, pinches off at the neck, then tumbles down with gravity
+const CREAM_DRIPS = Array.from({ length: 12 }, (_, i) => {
+  const s = 0.75 + (i % 4) * 0.2;
+  return {
+    left: `${14 + ((i * 7.6) % 72)}%`,
+    width: `${12 * s}px`,
+    height: `${26 * s}px`,
+    "--fall": `${62 + (i % 3) * 14}vh`,
+    "--wobble": `${i % 2 ? 1 : -1}`,
+    animationDelay: `${2.0 + (i % 4) * 0.07}s`,
+    animationDuration: `${0.95 + (i % 3) * 0.15}s`,
+  };
+});
+
+// thin steady streams that streak down the glass as the cream drains
+const CREAM_RIVULETS = [12, 33, 54, 74, 90].map((left, i) => ({
+  left: `${left}%`,
+  animationDelay: `${2.2 + (i % 3) * 0.14}s`,
+  animationDuration: `${1.5 + (i % 2) * 0.1}s`,
+}));
+
+function buildHalfDonut(THREE_NS) {
+  const group = new THREE_NS.Group();
+
+  // half a torus — the donut is built from two of these so it can split open
+  const torusGeo = new THREE_NS.TorusGeometry(1, 0.42, 40, 50, Math.PI);
+  const icingMat = new THREE_NS.MeshPhysicalMaterial({
+    color: 0xff8fab,
+    roughness: 0.28,
+    metalness: 0.05,
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.25,
+  });
+  const torus = new THREE_NS.Mesh(torusGeo, icingMat);
+  torus.rotation.x = Math.PI / 2;
+  group.add(torus);
+
+  // caps seal the two cut ends with a cream "filling" that shows when it opens
+  const creamMat = new THREE_NS.MeshStandardMaterial({ color: 0xfbf4e8, roughness: 0.45 });
+  const capGeo = new THREE_NS.CircleGeometry(0.42, 28);
+  const cap0 = new THREE_NS.Mesh(capGeo, creamMat);
+  cap0.position.set(1, 0, 0);
+  group.add(cap0);
+  const cap1 = new THREE_NS.Mesh(capGeo.clone(), creamMat);
+  cap1.position.set(-1, 0, 0);
+  cap1.rotation.y = Math.PI;
+  group.add(cap1);
+
+  // drips of icing around the underside of this half
+  const dripMat = new THREE_NS.MeshPhysicalMaterial({
+    color: 0xff6f91,
+    roughness: 0.3,
+    clearcoat: 0.5,
+  });
+  const dripCount = 5;
+  for (let i = 0; i < dripCount; i++) {
+    const u = (i / dripCount) * Math.PI + Math.random() * 0.25;
+    const len = 0.15 + Math.random() * 0.22;
+    const dripGeo = new THREE_NS.CylinderGeometry(0.05, 0.02, len, 8);
+    const drip = new THREE_NS.Mesh(dripGeo, dripMat);
+    drip.position.set(Math.cos(u), -0.42 - len / 2 + 0.1, Math.sin(u));
+    group.add(drip);
+  }
+
+  // sprinkles scattered across the top surface of this half
+  const sprinkleCount = 28;
+  for (let i = 0; i < sprinkleCount; i++) {
+    const u = Math.random() * Math.PI;
+    const v = -Math.PI * 0.35 + Math.random() * Math.PI * 0.7;
+    const R = 1;
+    const r = 0.42 * 1.04;
+    const x = (R + r * Math.cos(v)) * Math.cos(u);
+    const y = r * Math.sin(v);
+    const z = (R + r * Math.cos(v)) * Math.sin(u);
+
+    const color = SPRINKLE_COLORS[Math.floor(Math.random() * SPRINKLE_COLORS.length)];
+    const sprinkleMat = new THREE_NS.MeshStandardMaterial({ color, roughness: 0.5 });
+    const sprinkleGeo = new THREE_NS.CylinderGeometry(0.025, 0.025, 0.14, 6);
+    const sprinkle = new THREE_NS.Mesh(sprinkleGeo, sprinkleMat);
+    sprinkle.position.set(x, y, z);
+    sprinkle.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    group.add(sprinkle);
+  }
+
+  return group;
+}
+
+/**
+ * A donut that sits idle (gentle bob + slow spin) until `split` moves from
+ * 0 to 1. As it opens, the two halves pull apart, the whole thing grows
+ * toward the camera, and cream-coloured cut faces peek out of the gap.
+ * `split` is driven entirely by the parent.
+ */
+function Donut3D({ size = 260, className = "", style = {}, split = 0, onClick }) {
+  const mountRef = useRef(null);
+  const stateRef = useRef({});
+  const splitRef = useRef(0);
+  const splitCurrentRef = useRef(0);
+
+  // keep the render loop reading the latest split target without re-mounting
+  useEffect(() => {
+    splitRef.current = split;
+  }, [split]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    const width = size;
+    const height = size;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    camera.position.set(0, 1.5, 4.6);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mount.innerHTML = "";
+    mount.appendChild(renderer.domElement);
+
+    const hemi = new THREE.HemisphereLight(0xfff3e0, 0x2b1b12, 0.9);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+    dir.position.set(2, 3, 2);
+    scene.add(dir);
+    const rim = new THREE.PointLight(0xffb3c6, 0.8, 10);
+    rim.position.set(-2, 1, -2);
+    scene.add(rim);
+
+    // two halves — left covers the left side of the donut, right the right side
+    const leftHalf = buildHalfDonut(THREE);
+    leftHalf.rotation.y = -Math.PI / 2;
+    const rightHalf = buildHalfDonut(THREE);
+    rightHalf.rotation.y = Math.PI / 2;
+
+    const donut = new THREE.Group();
+    donut.rotation.x = 0.4;
+    donut.add(leftHalf);
+    donut.add(rightHalf);
+    scene.add(donut);
+
+    // make every material transparent up-front so opacity can be animated smoothly
+    donut.traverse((obj) => {
+      if (obj.material) obj.material.transparent = true;
+    });
+
+    stateRef.current = { renderer, raf: null, t: 0 };
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      const s = stateRef.current;
+      if (!s.renderer) return;
+      const dt = clock.getDelta();
+      s.t += dt;
+
+      // smoothly chase the split target so opening/closing is buttery
+      const target = Math.min(Math.max(splitRef.current, 0), 1);
+      const current = splitCurrentRef.current;
+      const rate = target > current ? 2.3 : 5.2;
+      const next = current + (target - current) * (1 - Math.exp(-dt * rate));
+      splitCurrentRef.current = next;
+      const ease = next * next * (3 - 2 * next);
+      const idleAmount = 1 - ease;
+
+      // idle bob + sway fade out as the donut opens, and it eases its spin
+      donut.position.y = Math.sin(s.t * 1.6) * 0.08 * idleAmount + ease * 0.35;
+      donut.rotation.z = Math.sin(s.t * 0.9) * 0.05 * idleAmount;
+      donut.rotation.y += dt * (0.5 * (1 - ease * 0.8));
+
+      // the big grow
+      donut.scale.setScalar(1 + ease * 2);
+
+      // halves split apart and swing slightly outward
+      leftHalf.position.x = -ease * 2.5;
+      leftHalf.position.z = ease * 0.55;
+      leftHalf.rotation.y = -Math.PI / 2 - ease * 0.5;
+      rightHalf.position.x = ease * 2.5;
+      rightHalf.position.z = ease * 0.55;
+      rightHalf.rotation.y = Math.PI / 2 + ease * 0.5;
+
+      // lean the camera in for drama
+      camera.position.z = 4.6 - ease * 1.6;
+
+      donut.traverse((obj) => {
+        if (obj.material) obj.material.opacity = 1 - ease * 0.15;
+      });
+
+      renderer.render(scene, camera);
+      s.raf = requestAnimationFrame(animate);
+    }
+    animate();
+
+    return () => {
+      const s = stateRef.current;
+      if (s.raf) cancelAnimationFrame(s.raf);
+      donut.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+      });
+      renderer.dispose();
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
+      stateRef.current = {};
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size]);
+
+  return (
+    <div
+      ref={mountRef}
+      className={className}
+      role="button"
+      tabIndex={0}
+      aria-label="Open the donut"
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      style={{ width: size, height: size, cursor: "pointer", ...style }}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Nav                                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -211,8 +464,24 @@ function HalfDonut({ icing = "#FF8FAB", size = 48, className = "", flip = false 
 
 export default function Portfolio() {
   const [active, setActive] = useState("home");
+  const [split, setSplit] = useState(0);
+  const [donutSize, setDonutSize] = useState(320);
   const sectionRefs = useRef({});
 
+  // full donut fills the first screen — size it to the viewport, capped for perf
+  useEffect(() => {
+    const computeSize = () => {
+      const s = Math.min(window.innerWidth, window.innerHeight);
+      setDonutSize(Math.max(s, 280));
+    };
+    computeSize();
+    window.addEventListener("resize", computeSize);
+    return () => window.removeEventListener("resize", computeSize);
+  }, []);
+
+  const openDonut = () => setSplit(1);
+
+  // scroll-spy for the nav (only meaningful once past the hero)
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -242,7 +511,12 @@ export default function Portfolio() {
       <NavBar active={active} onNavigate={scrollTo} />
 
       <main>
-        <div id="home" ref={registerSection("home")} className="hero-wrapper" style={{ height: "100vh" }}>
+        <div
+          id="home"
+          ref={registerSection("home")}
+          className="hero-wrapper"
+          style={{ height: "100vh" }}
+        >
           <section className="hero">
             <div className="hero-sprinkle-field" aria-hidden="true">
               {Array.from({ length: 14 }).map((_, i) => (
@@ -253,7 +527,13 @@ export default function Portfolio() {
                 }} />
               ))}
             </div>
-            <DonutBadge size={280} className="hero-donut" />
+
+            <Donut3D
+              size={donutSize}
+              className="hero-donut"
+              split={split}
+              onClick={openDonut}
+            />
           </section>
         </div>
 
