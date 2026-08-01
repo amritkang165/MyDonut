@@ -114,6 +114,10 @@ const PROJECTS = [
 
 const ACCENT_COLORS = { pink: "#FF8FAB", gold: "#E8A93B", mint: "#8FE3C4" };
 const CARD_DRIPS = [10, 14, 8, 16, 12, 9, 15, 11, 13, 7, 12, 10];
+const ABOUT_DRIPS = [
+  [22, 10], [34, 12], [16, 9], [40, 13], [26, 10], [18, 9], [36, 12],
+  [28, 11], [20, 9], [32, 12], [24, 10], [15, 9], [38, 13], [22, 10],
+];
 const DECOR_SPRINKLES = Array.from({ length: 10 }, (_, i) => ({
   left: `${(i * 9.7 + 4) % 96}%`,
   top: `${(i * 5.3) % 80 + 8}%`,
@@ -587,7 +591,7 @@ export default function Portfolio() {
   const [active, setActive] = useState("home");
   const [phase, setPhase] = useState("idle"); // idle | opening
   const [split, setSplit] = useState(0);
-  const [aboutVisible, setAboutVisible] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const [donutSize, setDonutSize] = useState(320);
   const sectionRefs = useRef({});
   const heroWrapperRef = useRef(null);
@@ -614,43 +618,25 @@ export default function Portfolio() {
     setPhase("opening");
   };
 
-  // the big moment — the donut splits open (eased inside the 3D loop), cream
-  // floods out, runs down the glass and drips away, the donut eases back
-  // together, and the page scrolls down to the About section which slides in.
+  // the big moment — the donut splits open (eased inside the 3D loop) and cream
+  // floods out. As it drains away the About page is revealed underneath, growing
+  // out of the donut's hole while cream still drips over it. No scrolling.
   useEffect(() => {
     if (phase !== "opening") return;
     const closeT = window.setTimeout(() => setSplit(0), 3400);
-    const endT = window.setTimeout(() => {
-      setPhase("idle");
-      const el = sectionRefs.current["about"];
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 4200);
+    const revealT = window.setTimeout(() => {
+      setRevealed(true);
+      setActive("about");
+    }, 2400);
+    const endT = window.setTimeout(() => setPhase("idle"), 4600);
     return () => {
       window.clearTimeout(closeT);
+      window.clearTimeout(revealT);
       window.clearTimeout(endT);
     };
   }, [phase]);
 
-  // About slides in when it scrolls into view
-  useEffect(() => {
-    const el = sectionRefs.current["about"];
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setAboutVisible(true);
-            obs.disconnect();
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  // scroll-spy for the nav (only meaningful once past the hero)
+  // scroll-spy for the nav (re-observes once the About panel is revealed)
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -662,7 +648,7 @@ export default function Portfolio() {
     );
     Object.values(sectionRefs.current).forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [revealed]);
 
   const registerSection = (id) => (el) => {
     sectionRefs.current[id] = el;
@@ -687,91 +673,96 @@ export default function Portfolio() {
             registerSection("home")(el);
           }}
           className="hero-wrapper"
-          style={{ height: "100vh" }}
+          style={{ height: revealed ? "auto" : "100vh" }}
         >
-          <section className="hero">
-            <div className="hero-sprinkle-field" aria-hidden="true">
-              {Array.from({ length: 14 }).map((_, i) => (
-                <span key={i} className={`floating-dot dot-${i % 6}`} style={{
-                  left: `${(i * 7.3) % 100}%`,
-                  animationDelay: `${(i * 0.6) % 5}s`,
-                  animationDuration: `${6 + (i % 5)}s`,
-                }} />
-              ))}
-            </div>
-
-            <Donut3D
-              size={donutSize}
-              className="hero-donut"
-              split={split}
-              onClick={openDonut}
-            />
-          </section>
-        </div>
-
-        <section
-          id="about"
-          ref={registerSection("about")}
-          className={`about${aboutVisible ? " is-visible" : ""}`}
-        >
-          <div className="about-decor" aria-hidden="true">
-            <DonutBadge icing="#E8A93B" size={54} className="decor-donut ad-1" />
-            <DonutBadge icing="#8FE3C4" size={40} className="decor-donut ad-2" />
-            <HalfDonut icing="#FF8FAB" size={34} className="ad-3" />
-            <HalfDonut icing="#845EC2" size={28} className="ad-4" flip />
-            {DECOR_SPRINKLES.map((s, i) => (
-              <span key={i} className={`decor-sprinkle spr-${i % 4}`} style={s} />
-            ))}
-          </div>
-          <div className="section-head">
-            <span className="section-kicker">about me</span>
-            <h2 className="section-title">What's in the box</h2>
-          </div>
-          <div className="about-split" aria-hidden="true">
-            <HalfDonut icing="#8FE3C4" size={30} />
-            <span className="split-line" />
-            <HalfDonut icing="#8FE3C4" size={30} flip />
-          </div>
-          <div className="about-grid">
-            <div className="about-photo-wrap">
-              <div className="photo-ring">
-                <span className="ring-sprinkle rs-1" />
-                <span className="ring-sprinkle rs-2" />
-                <span className="ring-sprinkle rs-3" />
-                <span className="ring-sprinkle rs-4" />
-                <span className="ring-sprinkle rs-5" />
-                <span className="ring-sprinkle rs-6" />
+          {revealed ? (
+            <section id="about" ref={registerSection("about")} className="about about-revealed">
+              <div className="about-icing" aria-hidden="true">
+                <div className="about-icing-drips">
+                  {ABOUT_DRIPS.map(([h, w], i) => (
+                    <span key={i} style={{ height: h, width: w }} />
+                  ))}
+                </div>
               </div>
-              <img src={PROFILE_IMG} alt="Amrit Kang" className="about-photo" />
-            </div>
-            <div className="about-copy">
-              <p className="about-bio">
-                I'm a second-year Computer Science student at{" "}
-                <strong>BITS Pilani</strong>, building full-stack applications, AI products
-                and backend systems that solve real problems people actually have. I like
-                shipping fast, learning in public, and giving every side-project an
-                unreasonably specific name.
-              </p>
-              <p className="about-bio">
-                Right now I'm deep in <strong>Swift</strong>, <strong>advanced Python</strong>{" "}
-                and <strong>system design</strong> — and actively looking for internships,
-                freelance work and interesting people to build with.
-              </p>
-              <ul className="ticket-list">
-                {FACTS.map((f) => (
-                  <li key={f.label} className="ticket-row">
-                    <span className="ticket-label">
-                      <GraduationCap size={13} className="ticket-icon" />
-                      {f.label}
-                    </span>
-                    <span className="ticket-leader" />
-                    <span className="ticket-value">{f.value}</span>
-                  </li>
+              <div className="about-decor" aria-hidden="true">
+                <DonutBadge icing="#E8A93B" size={54} className="decor-donut ad-1" />
+                <DonutBadge icing="#8FE3C4" size={40} className="decor-donut ad-2" />
+                <HalfDonut icing="#FF8FAB" size={34} className="ad-3" />
+                <HalfDonut icing="#845EC2" size={28} className="ad-4" flip />
+                {DECOR_SPRINKLES.map((s, i) => (
+                  <span key={i} className={`decor-sprinkle spr-${i % 4}`} style={s} />
                 ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+              </div>
+              <div className="section-head">
+                <span className="section-kicker">about me</span>
+                <h2 className="section-title">What's in the box</h2>
+              </div>
+              <div className="about-split" aria-hidden="true">
+                <HalfDonut icing="#8FE3C4" size={30} />
+                <span className="split-line" />
+                <HalfDonut icing="#8FE3C4" size={30} flip />
+              </div>
+              <div className="about-grid">
+                <div className="about-photo-wrap">
+                  <div className="photo-ring">
+                    <span className="ring-sprinkle rs-1" />
+                    <span className="ring-sprinkle rs-2" />
+                    <span className="ring-sprinkle rs-3" />
+                    <span className="ring-sprinkle rs-4" />
+                    <span className="ring-sprinkle rs-5" />
+                    <span className="ring-sprinkle rs-6" />
+                  </div>
+                  <img src={PROFILE_IMG} alt="Amrit Kang" className="about-photo" />
+                </div>
+                <div className="about-copy">
+                  <p className="about-bio">
+                    I'm a second-year Computer Science student at{" "}
+                    <strong>BITS Pilani</strong>, building full-stack applications, AI products
+                    and backend systems that solve real problems people actually have. I like
+                    shipping fast, learning in public, and giving every side-project an
+                    unreasonably specific name.
+                  </p>
+                  <p className="about-bio">
+                    Right now I'm deep in <strong>Swift</strong>, <strong>advanced Python</strong>{" "}
+                    and <strong>system design</strong> — and actively looking for internships,
+                    freelance work and interesting people to build with.
+                  </p>
+                  <ul className="ticket-list">
+                    {FACTS.map((f) => (
+                      <li key={f.label} className="ticket-row">
+                        <span className="ticket-label">
+                          <GraduationCap size={13} className="ticket-icon" />
+                          {f.label}
+                        </span>
+                        <span className="ticket-leader" />
+                        <span className="ticket-value">{f.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          ) : (
+            <section className="hero">
+              <div className="hero-sprinkle-field" aria-hidden="true">
+                {Array.from({ length: 14 }).map((_, i) => (
+                  <span key={i} className={`floating-dot dot-${i % 6}`} style={{
+                    left: `${(i * 7.3) % 100}%`,
+                    animationDelay: `${(i * 0.6) % 5}s`,
+                    animationDuration: `${6 + (i % 5)}s`,
+                  }} />
+                ))}
+              </div>
+
+              <Donut3D
+                size={donutSize}
+                className="hero-donut"
+                split={split}
+                onClick={openDonut}
+              />
+            </section>
+          )}
+        </div>
 
         <section id="projects" ref={registerSection("projects")} className="projects">
           <div className="projects-decor" aria-hidden="true">
@@ -1117,12 +1108,67 @@ section { padding: 120px 24px; max-width: 1080px; margin: 0 auto; position: rela
 .about {
   position: relative;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(32px);
-  will-change: transform, opacity;
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-.about.is-visible { opacity: 1; transform: translateY(0); }
+.about-revealed {
+  transform-origin: 50% 50%;
+  animation: about-emerge 0.9s cubic-bezier(0.18, 1.25, 0.25, 1) both;
+  will-change: transform, opacity;
+}
+.about-revealed::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 50%, rgba(251, 244, 232, 0.22), rgba(251, 244, 232, 0) 55%);
+  pointer-events: none;
+  animation: about-glow 1.4s cubic-bezier(0.18, 1.25, 0.25, 1) both;
+}
+@keyframes about-emerge {
+  0% { opacity: 0; transform: scale(0.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes about-glow {
+  0% { opacity: 0; transform: scale(0.1); }
+  45% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+.about-icing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 3;
+  background: linear-gradient(180deg, #FFFDF8 0%, #F7E6C6 45%, #EFD6A8 100%);
+  border-radius: 0 0 22px 22px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32), inset 0 -3px 6px rgba(180, 140, 80, 0.12);
+}
+.about-icing::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 6px;
+  height: 9px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  opacity: 0.85;
+}
+.about-icing-drips {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -2px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.about-icing-drips span {
+  width: 10px;
+  border-radius: 6px 6px 14px 14px;
+  background: linear-gradient(180deg, #F7E6C6 0%, #EFD6A8 85%, #DDB88A 100%);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+}
 .about-decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .about .section-head, .about-grid, .about-split { position: relative; z-index: 1; }
 .about-decor .half-donut {
@@ -1488,6 +1534,7 @@ section { padding: 120px 24px; max-width: 1080px; margin: 0 auto; position: rela
   .mini-donut, .photo-ring, .floating-dot, .scroll-hint,
   .cream-blob, .cream-fly, .cream-drip, .cream-rivulet, .decor-donut, .decor-sprinkle, .half-donut { animation: none !important; }
   .timeline-item { opacity: 1; transform: none; transition: none; }
+  .about-revealed, .about-revealed::before { animation: none !important; transform: none !important; opacity: 1 !important; }
   .about { opacity: 1; transform: none; transition: none; }
 }
 `;
