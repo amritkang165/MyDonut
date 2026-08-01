@@ -464,9 +464,16 @@ function HalfDonut({ icing = "#FF8FAB", size = 48, className = "", flip = false 
 
 export default function Portfolio() {
   const [active, setActive] = useState("home");
+  const [phase, setPhase] = useState("idle"); // idle | opening
   const [split, setSplit] = useState(0);
+  const [aboutVisible, setAboutVisible] = useState(false);
   const [donutSize, setDonutSize] = useState(320);
   const sectionRefs = useRef({});
+  const phaseRef = useRef("idle");
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   // full donut fills the first screen — size it to the viewport, capped for perf
   useEffect(() => {
@@ -479,7 +486,47 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", computeSize);
   }, []);
 
-  const openDonut = () => setSplit(1);
+  const openDonut = () => {
+    if (phaseRef.current !== "idle") return;
+    setSplit(1);
+    setPhase("opening");
+  };
+
+  // the big moment — the donut splits open (eased inside the 3D loop), cream
+  // floods out, runs down the glass and drips away, the donut eases back
+  // together, and the page scrolls down to the About section which slides in.
+  useEffect(() => {
+    if (phase !== "opening") return;
+    const closeT = window.setTimeout(() => setSplit(0), 3400);
+    const endT = window.setTimeout(() => {
+      setPhase("idle");
+      const el = sectionRefs.current["about"];
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 4200);
+    return () => {
+      window.clearTimeout(closeT);
+      window.clearTimeout(endT);
+    };
+  }, [phase]);
+
+  // About slides in when it scrolls into view
+  useEffect(() => {
+    const el = sectionRefs.current["about"];
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setAboutVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // scroll-spy for the nav (only meaningful once past the hero)
   useEffect(() => {
@@ -537,7 +584,11 @@ export default function Portfolio() {
           </section>
         </div>
 
-        <section id="about" ref={registerSection("about")} className="about is-visible">
+        <section
+          id="about"
+          ref={registerSection("about")}
+          className={`about${aboutVisible ? " is-visible" : ""}`}
+        >
           <div className="section-head">
             <span className="section-kicker">about me</span>
             <h2 className="section-title">What's in the box</h2>
@@ -643,6 +694,23 @@ export default function Portfolio() {
           <p className="footer-tagline">Build. Break. Learn. Repeat.</p>
         </section>
       </main>
+
+      {phase !== "idle" && (
+        <div className="cream-stage" aria-hidden="true">
+          <div className="cream-flood">
+            <div className="cream-blob" />
+            {CREAM_FLIES.map((s, i) => (
+              <span key={i} className="cream-fly" style={s} />
+            ))}
+          </div>
+          {CREAM_DRIPS.map((d, i) => (
+            <span key={i} className="cream-drip" style={d} />
+          ))}
+          {CREAM_RIVULETS.map((d, i) => (
+            <span key={i} className="cream-rivulet" style={d} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
