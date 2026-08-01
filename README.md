@@ -1,4 +1,4 @@
-# 🍩 Donut Portfolio
+# My donut 🍩🤎
 
 A playful single-page portfolio for **Amrit Kang** — built around a bakery theme where a 3D donut splits open, the about section is a printed receipt, and every project is served up in a **menu book** you can flip through and add to your order.
 
