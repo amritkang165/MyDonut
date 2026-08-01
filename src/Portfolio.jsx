@@ -830,6 +830,173 @@ function HalfDonut({ icing = "#FF8FAB", size = 48, className = "", flip = false 
   );
 }
 
+/* a golden syrup trail that drips after the cursor */
+function SyrupTrail() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = canvas.getContext("2d");
+    const COLORS = ["#FF8FAB", "#8FE3C4", "#E8A93B", "#F9F871", "#ffffff"];
+    let raf = 0;
+    let running = false;
+    let pts = [];
+    let drops = [];
+    let sparks = [];
+    let last = null;
+    let time = 0;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const onMove = (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      if (last) {
+        const dist = Math.hypot(x - last.x, y - last.y);
+        const steps = Math.min(6, Math.max(1, Math.floor(dist / 8)));
+        for (let i = 1; i <= steps; i++) {
+          pts.push({
+            x: last.x + ((x - last.x) * i) / steps,
+            y: last.y + ((y - last.y) * i) / steps,
+            life: 1,
+          });
+          // a few syrupy drops fling off the path
+          if (Math.random() < 0.35) {
+            drops.push({
+              x: last.x + ((x - last.x) * i) / steps,
+              y: last.y + ((y - last.y) * i) / steps,
+              vx: (Math.random() - 0.5) * 1.6,
+              vy: 0.4 + Math.random() * 1.4,
+              life: 1,
+              decay: 0.014 + Math.random() * 0.012,
+              size: 2.5 + Math.random() * 3.5,
+            });
+          }
+        }
+        for (let i = 0; i < 2; i++) {
+          sparks.push({
+            x: x + (Math.random() - 0.5) * 22,
+            y: y + (Math.random() - 0.5) * 22,
+            life: 1,
+            decay: 0.045 + Math.random() * 0.05,
+            size: 1.5 + Math.random() * 2.5,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          });
+        }
+      } else {
+        pts.push({ x, y, life: 1 });
+      }
+      last = { x, y };
+      if (pts.length > 40) pts.splice(0, pts.length - 40);
+      if (drops.length > 90) drops.splice(0, drops.length - 90);
+      if (sparks.length > 120) sparks.splice(0, sparks.length - 120);
+      start();
+    };
+    document.addEventListener("pointermove", onMove);
+
+    const draw = () => {
+      time += 0.016;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // wavy, tapering syrup ribbon
+      if (pts.length > 1) {
+        for (let i = pts.length - 1; i >= 0; i--) pts[i].life -= 0.022;
+        pts = pts.filter((p) => p.life > 0);
+        const n = pts.length;
+        for (let i = 1; i < n; i++) {
+          const p0 = pts[i - 1];
+          const p1 = pts[i];
+          const a = (p0.life + p1.life) / 2;
+          const width = 1.5 + 16 * a * a;
+          const wob = Math.sin(time * 6 + i * 0.55) * (1.5 + a * 1.5);
+          const y0 = p0.y + wob;
+          const y1 = p1.y + Math.sin(time * 6 + (i - 1) * 0.55) * (1.5 + a * 1.5);
+          ctx.beginPath();
+          ctx.moveTo(p0.x, y0);
+          ctx.lineTo(p1.x, y1);
+          ctx.lineWidth = width;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = `rgba(240, 161, 61, ${0.1 + 0.55 * a})`;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(p0.x, y0 - width * 0.22);
+          ctx.lineTo(p1.x, y1 - width * 0.22);
+          ctx.lineWidth = Math.max(1, width * 0.22);
+          ctx.strokeStyle = `rgba(255, 230, 170, ${0.05 + 0.35 * a})`;
+          ctx.stroke();
+        }
+      }
+
+      // falling drips
+      for (let i = drops.length - 1; i >= 0; i--) {
+        const d = drops[i];
+        d.vy += 0.16;
+        d.vx *= 0.99;
+        d.x += d.vx;
+        d.y += d.vy;
+        d.life -= d.decay;
+        if (d.life <= 0) {
+          drops.splice(i, 1);
+          continue;
+        }
+        const stretch = Math.min(1.7, 1 + d.vy * 0.12);
+        ctx.beginPath();
+        ctx.ellipse(d.x, d.y, d.size, d.size * stretch, 0, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 161, 61, ${0.7 * d.life})`;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(d.x - d.size * 0.25, d.y - d.size * 0.3, d.size * 0.3, d.size * 0.3 * stretch, 0, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 230, 170, ${0.55 * d.life})`;
+        ctx.fill();
+      }
+
+      // theme-colored sparkles
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.life -= s.decay;
+        if (s.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = s.life * 0.9;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+        ctx.fillStyle = s.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      if (pts.length > 1 || drops.length || sparks.length) {
+        raf = requestAnimationFrame(draw);
+      } else {
+        running = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+    const start = () => {
+      if (!running) {
+        running = true;
+        raf = requestAnimationFrame(draw);
+      }
+    };
+
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+  return <canvas ref={canvasRef} className="syrup-trail" aria-hidden="true" />;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Main App                                                            */
 /* ------------------------------------------------------------------ */
@@ -924,13 +1091,6 @@ export default function Portfolio() {
         >
           {revealed ? (
             <section id="about" ref={registerSection("about")} className="about about-revealed">
-              <div className="about-icing" aria-hidden="true">
-                <div className="about-icing-drips">
-                  {ABOUT_DRIPS.map(([h, w], i) => (
-                    <span key={i} style={{ height: h, width: w }} />
-                  ))}
-                </div>
-              </div>
               <div className="about-decor" aria-hidden="true">
                 <DonutBadge icing="#E8A93B" size={54} className="decor-donut ad-1" />
                 <DonutBadge icing="#8FE3C4" size={40} className="decor-donut ad-2" />
@@ -944,48 +1104,72 @@ export default function Portfolio() {
                 <span className="section-kicker">about me</span>
                 <h2 className="section-title">What's in the box</h2>
               </div>
-              <div className="about-split" aria-hidden="true">
-                <HalfDonut icing="#8FE3C4" size={30} />
-                <span className="split-line" />
-                <HalfDonut icing="#8FE3C4" size={30} flip />
-              </div>
-              <div className="about-grid">
-                <div className="about-photo-wrap">
-                  <div className="photo-ring">
-                    <span className="ring-sprinkle rs-1" />
-                    <span className="ring-sprinkle rs-2" />
-                    <span className="ring-sprinkle rs-3" />
-                    <span className="ring-sprinkle rs-4" />
-                    <span className="ring-sprinkle rs-5" />
-                    <span className="ring-sprinkle rs-6" />
-                  </div>
-                  <img src={PROFILE_IMG} alt="Amrit Kang" className="about-photo" />
-                </div>
-                <div className="about-copy">
-                  <p className="about-bio">
-                    I'm a second-year Computer Science student at{" "}
-                    <strong>BITS Pilani</strong>, building full-stack applications, AI products
-                    and backend systems that solve real problems people actually have. I like
-                    shipping fast, learning in public, and giving every side-project an
-                    unreasonably specific name.
-                  </p>
-                  <p className="about-bio">
-                    Right now I'm deep in <strong>Swift</strong>, <strong>advanced Python</strong>{" "}
-                    and <strong>system design</strong> — and actively looking for internships,
-                    freelance work and interesting people to build with.
-                  </p>
-                  <ul className="ticket-list">
-                    {FACTS.map((f) => (
-                      <li key={f.label} className="ticket-row">
-                        <span className="ticket-label">
-                          <GraduationCap size={13} className="ticket-icon" />
-                          {f.label}
-                        </span>
-                        <span className="ticket-leader" />
-                        <span className="ticket-value">{f.value}</span>
-                      </li>
+              <div className="about-receipt">
+                <div className="receipt-icing" aria-hidden="true">
+                  <div className="receipt-icing-drips">
+                    {CARD_DRIPS.map((h, i) => (
+                      <span key={i} style={{ height: h }} />
                     ))}
-                  </ul>
+                  </div>
+                </div>
+                <div className="receipt-inner">
+                  <div className="receipt-head">
+                    <DonutBadge icing="#FF8FAB" size={34} className="receipt-donut" />
+                    <div className="receipt-shop">
+                      <span className="receipt-shop-name">DONUTS &amp; DEVOPS</span>
+                      <span className="receipt-shop-tag">est. 2005 · baked fresh daily</span>
+                    </div>
+                    <span className="receipt-stamp">ORDER #001</span>
+                  </div>
+                  <hr className="receipt-perf" />
+                  <div className="receipt-body">
+                    <div className="receipt-photo-col">
+                      <div className="receipt-photo-frame">
+                        <img src={PROFILE_IMG} alt="Amrit Kang" className="receipt-photo" />
+                        <span className="frame-sprinkle fs-1" />
+                        <span className="frame-sprinkle fs-2" />
+                        <span className="frame-sprinkle fs-3" />
+                        <span className="frame-sprinkle fs-4" />
+                        <div className="frame-icing" aria-hidden="true">
+                          <span className="frame-drip fd-1" />
+                          <span className="frame-drip fd-2" />
+                          <span className="frame-drip fd-3" />
+                          <span className="frame-drip fd-4" />
+                        </div>
+                      </div>
+                      <div className="receipt-id">
+                        <span className="receipt-id-name">AMRIT KANG</span>
+                        <span className="receipt-id-tag">full-stack dev · part-time pastry chef</span>
+                        <span className="receipt-id-line">ID #001 · BITS PILANI · 2ND YEAR</span>
+                      </div>
+                    </div>
+                    <div className="receipt-info-col">
+                      <ul className="receipt-bullets">
+                        <li>Second-year <strong>CS</strong> student at <strong>BITS Pilani</strong></li>
+                        <li>Baking <strong>full-stack apps</strong>, <strong>AI products</strong> and backend systems</li>
+                        <li>Solving real problems people actually have</li>
+                        <li>Shipping fast and learning in public</li>
+                        <li>Sprinkling time between <strong>Swift</strong>, <strong>Python</strong> and <strong>System Design</strong></li>
+                        <li>Open to internships, freelance work and interesting people</li>
+                      </ul>
+                      <div className="receipt-facts">
+                        {FACTS.map((f) => (
+                          <div key={f.label} className="receipt-line">
+                            <span className="receipt-line-label">{f.label}</span>
+                            <span className="receipt-line-dots" aria-hidden="true" />
+                            <span className="receipt-line-value">{f.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <hr className="receipt-perf" />
+                  <div className="receipt-total">
+                    <span>TOTAL</span>
+                    <span>one big donut</span>
+                  </div>
+                  <div className="receipt-barcode" aria-hidden="true" />
+                  <p className="receipt-thanks">thanks for stopping by — the dough is on me</p>
                 </div>
               </div>
             </section>
@@ -1022,20 +1206,16 @@ export default function Portfolio() {
           </div>
           <div className="section-head">
             <span className="section-kicker">projects</span>
-            <h2 className="section-title">Seven things I've baked</h2>
+            <h2 className="section-title">Some masterpieces I've baked</h2>
             <p className="section-desc">
               A batch of full-stack and AI projects, pulled straight from{" "}
               <a href="https://github.com/amritkang165" target="_blank" rel="noopener noreferrer">
                 github.com/amritkang165
               </a>
-              . Scroll down — each box slides in as it comes into view.
+              . Open the book — every page is a project, and your order slips onto the receipt.
             </p>
           </div>
-          <div className="project-timeline">
-            {PROJECTS.map((p, i) => (
-              <TimelineItem key={p.key} project={p} index={i} />
-            ))}
-          </div>
+          <MenuBook projects={PROJECTS} />
         </section>
 
         <section id="contact" ref={registerSection("contact")} className="contact">
@@ -1085,6 +1265,8 @@ export default function Portfolio() {
           ))}
         </div>
       )}
+
+      <SyrupTrail />
     </div>
   );
 }
