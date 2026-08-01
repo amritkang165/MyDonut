@@ -375,6 +375,123 @@ function Donut3D({ size = 260, className = "", style = {}, split = 0, onClick })
 }
 
 /* ------------------------------------------------------------------ */
+/*  Tilt card — the "3D" project cards                                 */
+/* ------------------------------------------------------------------ */
+
+function ProjectBox({ project }) {
+  const cardRef = useRef(null);
+  const [transform, setTransform] = useState("");
+  const [glow, setGlow] = useState({ x: 50, y: 50, on: false });
+  const Icon = project.icon;
+
+  const handleMove = (e) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    const rotY = (px - 0.5) * 14;
+    const rotX = (0.5 - py) * 14;
+    setTransform(
+      `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(10px)`
+    );
+    setGlow({ x: px * 100, y: py * 100, on: true });
+  };
+
+  const handleLeave = () => {
+    setTransform("perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px)");
+    setGlow((g) => ({ ...g, on: false }));
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className={`project-card accent-${project.accent}`}
+      style={{ "--accent": ACCENT_COLORS[project.accent], transform: transform || undefined }}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+    >
+      <div
+        className="card-glow"
+        style={{
+          opacity: glow.on ? 1 : 0,
+          background: `radial-gradient(circle at ${glow.x}% ${glow.y}%, rgba(255,255,255,0.16), transparent 60%)`,
+        }}
+      />
+      <div className="card-icing">
+        <DonutBadge icing={ACCENT_COLORS[project.accent]} size={42} />
+        <h3 className="card-title">{project.name}</h3>
+        <div className="card-icing-drips" aria-hidden="true">
+          {CARD_DRIPS.map((h, i) => (
+            <span key={i} style={{ height: h }} />
+          ))}
+        </div>
+      </div>
+      <div className="card-body">
+        <div className="card-top">
+          <div className="card-icon">
+            <Icon size={18} strokeWidth={2} />
+          </div>
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card-link"
+            aria-label={`Open ${project.name} on GitHub`}
+          >
+            <ExternalLink size={16} />
+          </a>
+        </div>
+        <p className="card-tag">{project.tag}</p>
+        <p className="card-desc">{project.desc}</p>
+        <div className="card-stack">
+          {project.stack.map((s) => (
+            <span key={s} className="chip">
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// one project on the timeline — slides in as it scrolls into view
+function TimelineItem({ project, index }) {
+  const itemRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = itemRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const side = index % 2 === 0 ? "left" : "right";
+
+  return (
+    <div ref={itemRef} className={`timeline-item ${side} ${visible ? "is-visible" : ""}`}>
+      <div className="timeline-dot">
+        <DonutBadge icing={ACCENT_COLORS[project.accent]} size={36} />
+      </div>
+      <ProjectBox project={project} />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Nav                                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -462,6 +579,10 @@ function HalfDonut({ icing = "#FF8FAB", size = 48, className = "", flip = false 
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Main App                                                            */
+/* ------------------------------------------------------------------ */
+
 export default function Portfolio() {
   const [active, setActive] = useState("home");
   const [phase, setPhase] = useState("idle"); // idle | opening
@@ -469,6 +590,7 @@ export default function Portfolio() {
   const [aboutVisible, setAboutVisible] = useState(false);
   const [donutSize, setDonutSize] = useState(320);
   const sectionRefs = useRef({});
+  const heroWrapperRef = useRef(null);
   const phaseRef = useRef("idle");
 
   useEffect(() => {
@@ -560,7 +682,10 @@ export default function Portfolio() {
       <main>
         <div
           id="home"
-          ref={registerSection("home")}
+          ref={(el) => {
+            heroWrapperRef.current = el;
+            registerSection("home")(el);
+          }}
           className="hero-wrapper"
           style={{ height: "100vh" }}
         >
@@ -589,13 +714,34 @@ export default function Portfolio() {
           ref={registerSection("about")}
           className={`about${aboutVisible ? " is-visible" : ""}`}
         >
+          <div className="about-decor" aria-hidden="true">
+            <DonutBadge icing="#E8A93B" size={54} className="decor-donut ad-1" />
+            <DonutBadge icing="#8FE3C4" size={40} className="decor-donut ad-2" />
+            <HalfDonut icing="#FF8FAB" size={34} className="ad-3" />
+            <HalfDonut icing="#845EC2" size={28} className="ad-4" flip />
+            {DECOR_SPRINKLES.map((s, i) => (
+              <span key={i} className={`decor-sprinkle spr-${i % 4}`} style={s} />
+            ))}
+          </div>
           <div className="section-head">
             <span className="section-kicker">about me</span>
             <h2 className="section-title">What's in the box</h2>
           </div>
+          <div className="about-split" aria-hidden="true">
+            <HalfDonut icing="#8FE3C4" size={30} />
+            <span className="split-line" />
+            <HalfDonut icing="#8FE3C4" size={30} flip />
+          </div>
           <div className="about-grid">
             <div className="about-photo-wrap">
-              <div className="photo-ring" />
+              <div className="photo-ring">
+                <span className="ring-sprinkle rs-1" />
+                <span className="ring-sprinkle rs-2" />
+                <span className="ring-sprinkle rs-3" />
+                <span className="ring-sprinkle rs-4" />
+                <span className="ring-sprinkle rs-5" />
+                <span className="ring-sprinkle rs-6" />
+              </div>
               <img src={PROFILE_IMG} alt="Amrit Kang" className="about-photo" />
             </div>
             <div className="about-copy">
@@ -628,6 +774,14 @@ export default function Portfolio() {
         </section>
 
         <section id="projects" ref={registerSection("projects")} className="projects">
+          <div className="projects-decor" aria-hidden="true">
+            <DonutBadge icing="#FF8FAB" size={72} className="decor-donut dd-1" />
+            <DonutBadge icing="#8FE3C4" size={46} className="decor-donut dd-2" />
+            <DonutBadge icing="#E8A93B" size={58} className="decor-donut dd-3" />
+            {DECOR_SPRINKLES.map((s, i) => (
+              <span key={i} className={`decor-sprinkle spr-${i % 4}`} style={s} />
+            ))}
+          </div>
           <div className="section-head">
             <span className="section-kicker">projects</span>
             <h2 className="section-title">Seven things I've baked</h2>
@@ -636,30 +790,12 @@ export default function Portfolio() {
               <a href="https://github.com/amritkang165" target="_blank" rel="noopener noreferrer">
                 github.com/amritkang165
               </a>
-              .
+              . Scroll down — each box slides in as it comes into view.
             </p>
           </div>
           <div className="project-timeline">
-            {PROJECTS.map((p) => (
-              <article
-                key={p.key}
-                className={`project-card accent-${p.accent}`}
-                style={{ "--accent": ACCENT_COLORS[p.accent] }}
-              >
-                <div className="card-icing">
-                  <DonutBadge icing={ACCENT_COLORS[p.accent]} size={42} />
-                  <h3 className="card-title">{p.name}</h3>
-                </div>
-                <div className="card-body">
-                  <p className="card-tag">{p.tag}</p>
-                  <p className="card-desc">{p.desc}</p>
-                  <div className="card-stack">
-                    {p.stack.map((s) => (
-                      <span key={s} className="chip">{s}</span>
-                    ))}
-                  </div>
-                </div>
-              </article>
+            {PROJECTS.map((p, i) => (
+              <TimelineItem key={p.key} project={p} index={i} />
             ))}
           </div>
         </section>
@@ -714,6 +850,10 @@ export default function Portfolio() {
     </div>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  Styles                                                              */
+/* ------------------------------------------------------------------ */
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
