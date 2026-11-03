@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "format": "prettier --write src index.html playwright.config.js tests README.md"
   },
   "dependencies": {
     "lucide-react": "^0.474.0",
@@ -15,7 +17,9 @@
     "three": "^0.172.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "prettier": "^3.9.10",
     "vite": "^6.0.0"
   }
 }
