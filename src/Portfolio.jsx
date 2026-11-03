@@ -1031,7 +1031,7 @@ export default function Portfolio() {
               <span className="tape" />
               <img
                 src="/images/amrit.jpg"
-                alt="Amrit Kang smiling, wearing glasses and a black shirt"
+                alt="Amrit smiling and pointing to her cheek, wearing glasses and a black shirt"
                 fetchPriority="high"
               />
               <span className="handwriting">the girl behind the pixels ♡</span>
@@ -1131,8 +1131,8 @@ export default function Portfolio() {
             <div className="about-photo" data-reveal>
               <div className="photo-frame">
                 <img
-                  src="/images/amrit.jpg"
-                  alt="Portrait of Amrit Kang"
+                  src="/images/amrit-profile.jpg"
+                  alt="Amrit smiling in a white T-shirt and glasses"
                   loading="lazy"
                 />
                 <span className="handwriting">

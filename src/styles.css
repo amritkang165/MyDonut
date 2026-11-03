@@ -363,7 +363,7 @@ section {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  filter: sepia(0.12);
+  object-position: 62% 50%;
 }
 .portrait-polaroid .handwriting {
   display: block;
@@ -589,8 +589,7 @@ section {
   width: 100%;
   aspect-ratio: 0.88;
   object-fit: cover;
-  object-position: center;
-  filter: sepia(0.1);
+  object-position: 50% 53%;
 }
 .photo-frame > .handwriting {
   font-size: 23px;

@@ -29,7 +29,8 @@ npm run dev
 - `src/Portfolio.jsx`: profile, projects, events, contributions, map, and page sections.
 - `src/ShaderReveal.jsx`: original WebGL reveal; lazy-loaded, static-image fallback, bounded pixel density, and on-demand rendering.
 - `src/styles.css`: design system and responsive styles.
-- `public/images/amrit.jpg`: portrait recovered from the previous portfolio. Replace this file to update it.
+- `public/images/amrit.jpg`: user-supplied cheek-pointing photo for the cover Polaroid.
+- `public/images/amrit-profile.jpg`: user-supplied white T-shirt portrait for the profile section.
 - `public/images/hello-kitty.jpg`: user-provided Hello Kitty image.
 - `public/Amrit-Kang-Resume.pdf`: supplied résumé.
 
