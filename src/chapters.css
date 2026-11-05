@@ -1,0 +1,991 @@
+.journal-chapters {
+  background: #f5dae3;
+  color: #571c32;
+}
+.chapter-shell {
+  max-width: 1280px;
+  padding-inline: 60px;
+  margin-inline: auto;
+}
+.editorial-label {
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: #75515e;
+  text-transform: uppercase;
+  line-height: 1.7;
+}
+.editorial-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  min-height: 44px;
+  font-size: 12px;
+}
+.editorial-link:hover {
+  color: #a73660;
+}
+.journal-chapters a:focus-visible,
+.journal-chapters button:focus-visible,
+.journal-chapters summary:focus-visible {
+  outline: 2px solid #a73660;
+  outline-offset: 5px;
+}
+#choices-heading:focus,
+#projects-heading:focus,
+#events-heading:focus {
+  outline: none;
+}
+.chapter-crossroads {
+  padding-block: 100px 110px;
+}
+.crossroads-heading {
+  text-align: center;
+}
+.crossroads-heading h2 {
+  font:
+    400 clamp(70px, 8.4vw, 120px)/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  margin: 20px 0;
+  letter-spacing: -2px;
+}
+.crossroads-heading p {
+  color: #75515e;
+  font-size: 13px;
+}
+.road-fork {
+  display: block;
+  width: 100%;
+  height: 180px;
+  color: #bc7b91;
+  margin-top: 25px;
+  overflow: visible;
+}
+.chapter-choices {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 60px;
+}
+.chapter-choice {
+  display: block;
+  padding: 30px 20px 25px;
+  border-top: 1px solid #c995a8;
+  border-bottom: 1px solid #d6acbb;
+  text-decoration: none;
+  color: inherit;
+}
+.chapter-choice small {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #75515e;
+}
+.chapter-choice strong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  font:
+    400 clamp(29px, 4.8vw, 65px)/1.05 "Cormorant Garamond",
+    Georgia,
+    serif;
+  margin: 17px 0 13px;
+}
+.chapter-choice strong svg {
+  flex-shrink: 0;
+  width: 25px;
+  transition: translate 160ms ease;
+}
+.chapter-choice > span {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #75515e;
+}
+.chapter-choice:hover strong,
+.chapter-choice[aria-current] strong {
+  color: #a73660;
+}
+.chapter-choice:hover svg {
+  translate: 3px -3px;
+}
+.projects-chapter,
+.events-chapter {
+  scroll-margin-top: 25px;
+  padding-top: 25px;
+}
+.chapter-return {
+  margin-bottom: 50px;
+}
+.chapter-heading {
+  margin-bottom: 70px;
+}
+.chapter-heading h2 {
+  font:
+    400 clamp(60px, 7.2vw, 104px)/0.98 "Cormorant Garamond",
+    Georgia,
+    serif;
+  letter-spacing: -3px;
+  margin: 22px 0 25px;
+}
+.chapter-heading > p {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 510px;
+  color: #75515e;
+}
+.project-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 55px;
+  align-items: center;
+  padding-block: 45px 65px;
+  border-top: 0;
+}
+.project-art {
+  margin: 0;
+  min-width: 0;
+}
+.project-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #e3dfd9;
+}
+.project-art figcaption {
+  font-size: 9px;
+  color: #75515e;
+  margin-top: 12px;
+}
+.project-Pocki {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+}
+.project-Pocki .project-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+.project-Pocki .project-art {
+  grid-column: 2;
+  padding-block: 35px;
+  background: #571c32;
+}
+.project-Pocki .project-art img {
+  width: auto;
+  height: 510px;
+  transform: rotate(-6deg);
+  box-shadow: 15px 25px 45px #1d071c50;
+  position: relative;
+  max-width: 90%;
+  object-fit: contain;
+  margin: auto;
+  border: none;
+}
+.project-Pocki .project-art figcaption {
+  text-align: center;
+  margin-top: 30px;
+  color: #f5dae3;
+  position: relative;
+}
+.project-copy h3 {
+  font-size: clamp(29px, 3.2vw, 42px);
+  font-weight: 500;
+  letter-spacing: -1.6px;
+  line-height: 1.12;
+  margin: 22px 0;
+}
+.project-description {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0 0 27px;
+}
+.project-role {
+  font-size: 11px;
+  color: #75515e;
+  margin: 0 0 10px;
+  line-height: 1.7;
+}
+.project-stack {
+  font-size: 10px;
+  color: #75515e;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.project-story {
+  border-top: 1px solid #d6acbb;
+  border-bottom: 1px solid #d6acbb;
+  margin-bottom: 15px;
+}
+.project-story summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  min-height: 48px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.project-story summary::-webkit-details-marker {
+  display: none;
+}
+.project-story summary span {
+  font-size: 20px;
+}
+.project-story[open] summary span {
+  transform: rotate(45deg);
+}
+.project-story h4 {
+  font-size: 12px;
+  margin: 12px 0;
+}
+.project-story p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #75515e;
+  margin: 0 0 18px;
+}
+.other-projects {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 100px;
+  padding: 50px 0;
+  border-top: 1px solid #c995a8;
+}
+.project-text h3 {
+  font-size: 31px;
+  max-width: 400px;
+}
+.project-text .project-description {
+  font-size: 16px;
+}
+.chapter-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  align-items: center;
+  padding: 30px 0 60px;
+  border-top: 1px solid #d6acbb;
+}
+.event-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 30px 0;
+  border-top: 1px solid #c995a8;
+}
+.event-title-row h3 {
+  font:
+    400 clamp(70px, 8.5vw, 124px)/0.95 "Cormorant Garamond",
+    Georgia,
+    serif;
+  letter-spacing: -4px;
+  margin: 16px 0 0;
+}
+.event-metadata {
+  max-width: 315px;
+}
+.event-role {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #9b3558;
+}
+.event-metadata p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #75515e;
+  margin: 10px 0 0;
+}
+.events-chapter figure {
+  margin: 0;
+  min-width: 0;
+}
+.event-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: #e7e3dd;
+  color: #571c32;
+  cursor: zoom-in;
+}
+.event-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.photo-enlarge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: #f5dae3e6;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+}
+.events-chapter figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 14px;
+  color: #75515e;
+  font-size: 10px;
+  line-height: 1.7;
+}
+.sunbeam-after {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr);
+  gap: 100px;
+  align-items: start;
+  margin: 15px 0 110px;
+  padding-left: 45px;
+}
+.sunbeam-story-column {
+  padding-top: 45px;
+}
+.event-memory blockquote {
+  font:
+    clamp(35px, 3.4vw, 46px)/1.2 "Caveat",
+    cursive;
+  color: #87384e;
+  margin: 22px 0;
+}
+.event-memory p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #75515e;
+}
+.sunbeam-team {
+  margin-top: 42px !important;
+}
+.tinyfish-story .event-title-row h3 {
+  font-size: clamp(55px, 6vw, 86px);
+}
+.tinyfish-album {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  padding-right: 35px;
+}
+.tinyfish-after {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 100px;
+  align-items: center;
+  max-width: 900px;
+  margin: 65px auto 90px;
+}
+.contact-footer {
+  padding-top: 80px;
+  padding-bottom: 25px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 40px;
+  border-top: 1px solid #c995a8;
+}
+.contact-heading h2 {
+  font:
+    400 clamp(55px, 6vw, 80px)/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  letter-spacing: -2px;
+  margin: 20px 0;
+}
+.contact-address {
+  align-self: center;
+  min-width: 0;
+}
+.contact-address > a {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  font-size: clamp(14px, 1.8vw, 22px);
+  color: inherit;
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid #a73660;
+  overflow-wrap: anywhere;
+}
+.contact-address > a svg {
+  flex-shrink: 0;
+}
+.contact-actions {
+  display: flex;
+  gap: 30px;
+  margin-top: 13px;
+}
+.contact-actions a,
+.contact-actions button {
+  min-height: 44px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: none;
+  font:
+    11px "DM Sans",
+    sans-serif;
+  color: #75515e;
+}
+.contact-address [role="status"] {
+  font-size: 10px;
+  color: #75515e;
+  min-height: 16px;
+  margin: 0;
+}
+.footer-colophon {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #d6acbb;
+  padding-top: 22px;
+  font-size: 10px;
+  color: #75515e;
+}
+.photo-dialog {
+  width: fit-content;
+  max-width: min(1150px, 94vw);
+  max-height: 94svh;
+  border: 0;
+  padding: 0;
+  background: #f5dae3;
+  color: #571c32;
+}
+.photo-dialog::backdrop {
+  background: #151515eb;
+}
+.photo-dialog-content {
+  padding: 50px 18px 8px;
+}
+.gallery-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 70svh;
+  margin: auto;
+  object-fit: contain;
+}
+.gallery-close {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+}
+.photo-dialog button {
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 8px;
+}
+.gallery-controls p {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.gallery-controls small {
+  display: block;
+  font-size: 10px;
+  color: #75515e;
+  margin-top: 6px;
+}
+/* A fork drawn as a road, with a route that responds to focus or a pointer. */
+.road-base {
+  stroke: #d6a4b6;
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+.road-center {
+  stroke: #fbedf1;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 7;
+}
+.road-route {
+  stroke: #9c3158;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 650ms cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+.road-stop {
+  fill: #f5dae3;
+  stroke: #bd7d95;
+  stroke-width: 2;
+  transition: fill 250ms;
+}
+.chapter-crossroads:has(
+    a[href="#projects"]:is(:hover, :focus-visible, [aria-current])
+  )
+  .road-projects,
+.chapter-crossroads:has(
+    a[href="#hosted-events"]:is(:hover, :focus-visible, [aria-current])
+  )
+  .road-events {
+  stroke-dashoffset: 0;
+}
+.chapter-crossroads:has(
+    a[href="#projects"]:is(:hover, :focus-visible, [aria-current])
+  )
+  .stop-projects,
+.chapter-crossroads:has(
+    a[href="#hosted-events"]:is(:hover, :focus-visible, [aria-current])
+  )
+  .stop-events {
+  fill: #9c3158;
+}
+.chapter-choice {
+  transition:
+    background 250ms,
+    transform 250ms;
+}
+.chapter-choice:is(:hover, :focus-visible, [aria-current]) {
+  background: #fbeaf0;
+}
+.chapter-choice:nth-child(2) {
+  margin-top: 25px;
+}
+.chapter-choice strong span {
+  min-width: 0;
+}
+.chapter-choice:hover {
+  transform: translateY(-4px);
+}
+.projects-chapter .chapter-heading {
+  max-width: 800px;
+}
+.projects-chapter .chapter-heading h2 {
+  font-style: italic;
+}
+.project-feature {
+  position: relative;
+  padding-block: 60px 100px;
+}
+.project-feature::before {
+  content: attr(data-project-number);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font:
+    italic 100px/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  color: #bd7d95;
+  z-index: 1;
+  pointer-events: none;
+}
+.project-art {
+  transition: transform 350ms;
+}
+.project-meraward .project-art {
+  padding-top: 25px;
+  transform: rotate(-2deg);
+}
+.project-meraward .project-art img {
+  box-shadow: 0 20px 45px #571c321a;
+}
+.project-Pocki {
+  gap: 100px;
+}
+.project-Pocki::before {
+  left: auto;
+  right: 0;
+  color: #e1a5bb;
+}
+.project-Pocki .project-art {
+  position: relative;
+  overflow: hidden;
+  padding-block: 60px 25px;
+}
+.project-Pocki .project-art::before {
+  content: "Pocki";
+  position: absolute;
+  top: 40px;
+  left: 10px;
+  right: 10px;
+  text-align: center;
+  font:
+    italic clamp(100px, 14vw, 190px)/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  color: #a64c6b;
+}
+.project-Pocki .project-copy {
+  padding-left: 30px;
+}
+.project-text {
+  padding-right: 20px;
+}
+.project-text:last-child {
+  padding-top: 65px;
+}
+.project-text h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 44px;
+}
+.events-chapter .chapter-heading {
+  margin-left: 7%;
+}
+.events-chapter .chapter-heading h2 {
+  font-style: italic;
+}
+.sunbeam-group {
+  width: 95%;
+  transform: rotate(-1deg);
+  display: flex;
+  flex-direction: column;
+}
+.sunbeam-group figcaption {
+  order: -1;
+  padding: 0 0 12px;
+}
+.events-chapter .sunbeam-portrait {
+  margin-top: -95px;
+  transform: rotate(3deg);
+  border: 8px solid #f5dae3;
+}
+.sunbeam-team {
+  transform: rotate(-2deg);
+}
+.event-photo {
+  overflow: hidden;
+  box-shadow: 0 12px 30px #571c3212;
+}
+.photo-viewfinder {
+  position: absolute;
+  width: 110px;
+  height: 90px;
+  left: var(--finder-x, 50%);
+  top: var(--finder-y, 50%);
+  transform: translate(-50%, -50%);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px #0009);
+  transition: opacity 180ms;
+}
+.photo-viewfinder > i {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  border: solid currentColor;
+}
+.photo-viewfinder > i:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+}
+.photo-viewfinder > i:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-width: 1px 1px 0 0;
+}
+.photo-viewfinder > i:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 1px 1px;
+}
+.photo-viewfinder > i:nth-child(4) {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+}
+.photo-viewfinder > span {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+.event-photo:focus-visible .photo-viewfinder {
+  opacity: 1;
+  left: 50%;
+  top: 50%;
+}
+.event-memory {
+  position: relative;
+}
+.sunbeam-memory::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 18px;
+  border-bottom: 1px solid #a73660;
+  border-radius: 0 0 50% 50%;
+  transform: rotate(-8deg);
+  margin: 0 0 25px 45%;
+}
+.tinyfish-album > figure:first-child {
+  transform: rotate(-3deg);
+  position: relative;
+  z-index: 1;
+}
+.tinyfish-album figcaption {
+  justify-content: flex-start;
+  gap: 16px;
+}
+.tinyfish-album > figure:last-child {
+  margin: 85px -25px 0 -20px;
+  transform: rotate(3deg);
+}
+.tinyfish-after > figure {
+  transform: rotate(-3deg);
+}
+.tinyfish-after {
+  margin-top: 100px;
+}
+.contact-heading h2 {
+  font-style: italic;
+  font-size: clamp(65px, 8vw, 110px);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .event-photo[data-tracking] .photo-viewfinder {
+    opacity: 1;
+  }
+  .project-meraward:has(.project-art:hover) .project-art {
+    transform: rotate(0deg) translateY(-6px);
+  }
+  .project-Pocki:has(.project-art:hover) .project-art {
+    transform: translateY(-6px);
+  }
+}
+@media (max-width: 900px) {
+  .chapter-shell {
+    padding-inline: 30px;
+  }
+  .project-feature,
+  .sunbeam-after,
+  .tinyfish-after {
+    gap: 35px;
+  }
+  .chapter-choices {
+    gap: 30px;
+  }
+  .event-title-row {
+    gap: 25px;
+  }
+  .other-projects {
+    gap: 40px;
+  }
+}
+@media (max-width: 650px) {
+  .chapter-shell {
+    padding-inline: 22px;
+  }
+  .chapter-crossroads {
+    padding-block: 65px;
+  }
+  .chapter-choices {
+    gap: 22px;
+  }
+  .chapter-choice {
+    padding-block: 22px;
+  }
+  .chapter-choice strong {
+    font-size: clamp(25px, 7.7vw, 30px);
+    align-items: flex-start;
+    min-height: 67px;
+  }
+  .chapter-choice strong svg {
+    width: 18px;
+    margin-top: 5px;
+  }
+  .chapter-choice small {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .chapter-choice > span {
+    font-size: 11px;
+  }
+  .road-fork {
+    height: 95px;
+  }
+  .chapter-return {
+    margin-bottom: 30px;
+  }
+  .chapter-heading {
+    margin-bottom: 45px;
+  }
+  .chapter-heading h2 {
+    font-size: clamp(48px, 15vw, 59px);
+    letter-spacing: -2px;
+  }
+  .chapter-heading > p {
+    font-size: 13px;
+  }
+  .project-feature,
+  .project-Pocki {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+    padding-block: 28px 45px;
+  }
+  .project-Pocki .project-copy,
+  .project-Pocki .project-art {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .project-Pocki .project-art img {
+    height: 390px;
+  }
+  .project-copy h3 {
+    font-size: 34px;
+    margin-block: 17px;
+  }
+  .project-description {
+    font-size: 17px;
+  }
+  .other-projects {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 45px;
+    padding-block: 35px;
+  }
+  .event-title-row {
+    display: block;
+    padding-block: 25px;
+  }
+  .event-title-row h3 {
+    font-size: clamp(55px, 18vw, 83px);
+  }
+  .event-metadata {
+    margin-top: 22px;
+  }
+  .sunbeam-after {
+    gap: 25px;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 25px 0 65px;
+    padding-left: 0;
+  }
+  .sunbeam-portrait {
+    width: 65%;
+  }
+  .sunbeam-story-column {
+    padding: 0;
+  }
+  .event-memory blockquote {
+    font-size: 31px;
+  }
+  .sunbeam-team {
+    margin-top: 30px !important;
+  }
+  .tinyfish-album {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding: 0;
+  }
+  .tinyfish-after {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+    margin: 40px auto 60px;
+  }
+  .tinyfish-after > figure {
+    width: 70%;
+    justify-self: end;
+  }
+  .contact-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding-top: 40px;
+  }
+  .contact-address > a {
+    font-size: 16px;
+  }
+  .footer-colophon {
+    margin-top: 20px;
+  }
+  .photo-dialog-content {
+    padding-inline: 8px;
+  }
+  .gallery-controls {
+    gap: 4px;
+  }
+  .gallery-controls p {
+    font-size: 10px;
+  }
+}
+@media (max-width: 650px) {
+  .chapter-choice {
+    padding-inline: 7px;
+  }
+  .chapter-choice:nth-child(2) {
+    margin-top: 15px;
+  }
+  .project-feature::before {
+    font-size: 65px;
+  }
+  .project-feature {
+    padding-top: 45px;
+  }
+  .project-Pocki .project-copy {
+    padding-left: 0;
+  }
+  .project-Pocki .project-art {
+    padding-top: 45px;
+  }
+  .project-text:last-child {
+    padding-top: 0;
+  }
+  .project-text {
+    padding-right: 0;
+  }
+  .project-text h3 {
+    font-size: 37px;
+  }
+  .events-chapter .chapter-heading {
+    margin-left: 0;
+  }
+  .sunbeam-group {
+    width: 100%;
+  }
+  .events-chapter .sunbeam-portrait {
+    margin-top: -40px;
+    margin-left: 10px;
+    width: 70%;
+    border-width: 5px;
+  }
+  .sunbeam-team {
+    width: 96%;
+    margin-left: auto !important;
+  }
+  .tinyfish-album > figure:first-child {
+    width: 94%;
+  }
+  .tinyfish-album > figure:last-child {
+    width: 94%;
+    margin: -5px 0 0 auto;
+  }
+  .event-memory {
+    padding-inline: 8px;
+  }
+  .photo-viewfinder {
+    width: 80px;
+    height: 65px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chapter-choice strong svg,
+  .road-route,
+  .road-stop,
+  .chapter-choice,
+  .project-art,
+  .photo-viewfinder {
+    transition: none;
+  }
+  .chapter-choice:hover {
+    transform: none;
+  }
+}
