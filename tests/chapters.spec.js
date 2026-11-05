@@ -28,8 +28,8 @@ for (const width of [1440, 390]) {
     const tabs = page
       .getByRole("tablist", { name: "Choose a project" })
       .getByRole("tab");
-    await expect(tabs).toHaveCount(4);
-    for (let index = 0; index < 4; index++) {
+    await expect(tabs).toHaveCount(5);
+    for (let index = 0; index < 5; index++) {
       const tab = tabs.nth(index);
       await tab.click();
       await expect(tab).toHaveAttribute("aria-selected", "true");

@@ -46,7 +46,7 @@ for (const width of [1440, 390]) {
       await expect(
         page.locator(".demo-trigger, .research-art, .schedule-art"),
       ).toHaveCount(0);
-      await expect(page.getByRole("tab")).toHaveCount(4);
+      await expect(page.getByRole("tab")).toHaveCount(5);
       await expect(page.locator(".workspace-screenshot img")).toHaveCount(1);
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth),

@@ -1,18 +1,19 @@
 import { test, expect } from "@playwright/test";
 
 for (const width of [1440, 390]) {
-  test(`all four project previews open and gallery focus returns at ${width}px`, async ({
+  test(`all five project previews open and gallery focus returns at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
     await page.goto("/#projects");
-    await expect(page.getByRole("tab")).toHaveCount(4);
+    await expect(page.getByRole("tab")).toHaveCount(5);
     await expect(page.getByRole("tab", { name: /Scheduler/ })).toHaveCount(0);
     for (const name of [
       "MERAWARD",
       "Pocki",
       "ReGit",
       "Khata Ledger",
+      "Clippit",
     ]) {
       await page.getByRole("tab", { name, exact: true }).click();
       await expect
@@ -39,12 +40,17 @@ for (const width of [1440, 390]) {
       await expect(open).toBeFocused();
     }
     await page
-      .getByRole("button", { name: "Enlarge Khata Ledger screenshot" })
+      .getByRole("button", { name: "Enlarge Clippit screenshot" })
       .click();
     await page.keyboard.press("ArrowRight");
     await expect(page.locator(".project-full-image")).toHaveAttribute(
       "src",
       /meraward.png/,
+    );
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.locator(".project-full-image")).toHaveAttribute(
+      "src",
+      /clippit.png/,
     );
     await page.keyboard.press("ArrowLeft");
     await expect(page.locator(".project-full-image")).toHaveAttribute(

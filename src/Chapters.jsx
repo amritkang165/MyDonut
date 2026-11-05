@@ -95,7 +95,26 @@ const projects = [
     detail:
       "ElevenLabs transcribes speech; Gemma 3 through local Ollama extracts ledger fields. Financial records stay in SQLite, with low-confidence notes held for correction. The screenshot uses an isolated demo account, not real customer records.",
   },
-
+  {
+    id: "clippit",
+    name: "Clippit",
+    image: "clippit.png",
+    imageWidth: 1920,
+    imageHeight: 1528,
+    imageAlt:
+      "Clippit macOS app view with searchable clipboard history, pinned clips, and a text preview using sample data",
+    previewLabel: "NATIVE macOS",
+    previewType: "APP VIEW · SAMPLE DATA",
+    kind: "MAC UTILITIES · PERSONAL PROJECT",
+    description:
+      "A calmer place for everything you copy. A native macOS clipboard manager for finding, pinning, and reusing text, links, and images.",
+    stack: ["SwiftUI", "AppKit", "Apple Vision", "SQLite"],
+    role: "Native macOS app development",
+    contribution:
+      "I built Clippit with searchable clipboard history, pinned clips, image previews, and on-device text recognition. A global shortcut and menu-bar access keep saved clips close at hand.",
+    detail:
+      "History stays on the Mac, with capture controls, text transformations, and JSON export. The preview renders the app’s SwiftUI views with sample data. The source is public on GitHub. This is a development preview; a signed download is not yet available.",
+  },
 ];
 
 const photos = [

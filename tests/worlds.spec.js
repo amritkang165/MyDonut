@@ -70,12 +70,12 @@ test("workspace tabs support arrow keys and display the matching real project", 
   );
   await page.keyboard.press("End");
   await expect(tabs.last()).toBeFocused();
-  await expect(page.getByRole("tabpanel")).toHaveAccessibleName(/Khata Ledger/);
+  await expect(page.getByRole("tabpanel")).toHaveAccessibleName(/Clippit/);
   await expect(
-    page.getByRole("link", { name: /Khata Ledger on GitHub/ }),
-  ).toHaveAttribute("href", /khata-ledger$/);
+    page.getByRole("link", { name: /Clippit on GitHub/ }),
+  ).toHaveAttribute("href", /clippit$/);
   await expect(
-    page.getByRole("link", { name: /Khata Ledger on GitHub/ }),
+    page.getByRole("link", { name: /Clippit on GitHub/ }),
   ).toContainText("View repository");
   await page.keyboard.press("ArrowRight");
   await expect(tabs.first()).toBeFocused();
