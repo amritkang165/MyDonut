@@ -1,0 +1,180 @@
+/* The liquid cover settles into the same blush as the rest of the journal. */
+:root {
+  color: #571c32;
+  background: #f5dae3;
+}
+.cover-page {
+  background: #f5dae3;
+}
+.full-banner {
+  background: color-mix(
+    in srgb,
+    #f3cfe2 calc((1 - var(--settle, 0)) * 100%),
+    #f5dae3
+  );
+}
+.portrait-frame {
+  padding: 0;
+  transform: rotate(calc(var(--settle) * -2deg));
+  box-shadow: 0 calc(var(--settle) * 18px) calc(var(--settle) * 45px) #571c321a;
+  background: transparent;
+}
+.scrapbook-margin {
+  color: #75515e;
+  letter-spacing: 1.6px;
+}
+.portrait-intro .meet-eyebrow {
+  color: #75515e;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+.portrait-intro h2 {
+  color: #571c32;
+}
+.portrait-intro h2 em {
+  color: #a73660;
+}
+.intro-description {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #75515e;
+  margin-top: 30px;
+}
+.portrait-intro .scrapbook-link {
+  color: #571c32;
+  text-decoration-color: #a73660;
+}
+.meet-section {
+  max-width: 1280px;
+  margin: auto;
+  padding: 100px 60px 60px;
+  background: #f5dae3;
+}
+.meet-section h2 {
+  font:
+    400 clamp(48px, 6.8vw, 90px)/1.05 "Cormorant Garamond",
+    Georgia,
+    serif;
+  color: #571c32;
+  letter-spacing: -2px;
+  margin: 20px 0 50px;
+}
+.profile-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.3fr;
+  gap: 100px;
+  border-top: 1px solid #c995a8;
+  padding-top: 36px;
+}
+.profile-education h3 {
+  font-size: 28px;
+  letter-spacing: -1px;
+  font-weight: 500;
+  margin: 18px 0 13px;
+}
+.profile-education p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #75515e;
+}
+.profile-education .profile-grade {
+  margin: 22px 0 10px;
+}
+.profile-grade strong {
+  color: #571c32;
+  font-weight: 500;
+  font:
+    italic 54px/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+}
+.profile-personal > p {
+  font-size: 18px;
+  line-height: 1.8;
+  margin: 0 0 32px;
+}
+.profile-interests {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 35px;
+}
+.profile-interests h3 {
+  font-size: 11px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.profile-interests p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #75515e;
+  margin: 0;
+}
+.signature-bow {
+  width: 36px;
+  height: 27px;
+  margin-left: 12px;
+  vertical-align: middle;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-12deg);
+}
+.profile-education {
+  padding-left: 25px;
+  border-left: 3px solid #a73660;
+}
+.profile-personal {
+  padding-top: 30px;
+}
+.profile-personal > p {
+  max-width: 520px;
+}
+.profile-interests > div:first-child {
+  transform: rotate(-1deg);
+}
+@media (max-width: 900px) {
+  .meet-section {
+    padding-inline: 30px;
+  }
+  .profile-layout {
+    gap: 40px;
+  }
+}
+@media (max-width: 760px) {
+  .portrait-frame {
+    padding: 0;
+  }
+  .portrait-intro h2 {
+    margin-bottom: 20px;
+  }
+  .intro-description {
+    font-size: 13px;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  .portrait-intro .meet-eyebrow {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+}
+@media (max-width: 650px) {
+  .meet-section {
+    padding: 55px 22px 35px;
+    text-align: left;
+  }
+  .meet-section h2 {
+    margin-bottom: 30px;
+  }
+  .profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 35px;
+    padding-top: 25px;
+  }
+  .profile-personal > p {
+    font-size: 16px;
+  }
+  .profile-interests {
+    gap: 25px;
+  }
+}

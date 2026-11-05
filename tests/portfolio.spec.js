@@ -160,7 +160,7 @@ test("phone cover supports tap reveal and native vertical swiping", async ({
   await page.screenshot({ path: "test-results/scroll-mobile-mid.png" });
   await page.locator("#meet-me").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("heading", { name: "hi, I’m Amrit." }),
+    page.getByRole("heading", { name: "A bit about me." }),
   ).toBeVisible();
   await expect
     .poll(() =>
@@ -226,7 +226,7 @@ test("scroll progressively melts the cover, releases into pink, and reverses", a
     );
   await page.evaluate(
     (y) => scrollTo({ top: y, behavior: "instant" }),
-    travel * 0.24,
+    travel * 0.12,
   );
   await page.waitForTimeout(180);
   expect((await page.locator(".full-banner").boundingBox()).y).toBe(0);
@@ -237,7 +237,7 @@ test("scroll progressively melts the cover, releases into pink, and reverses", a
   expect(partialChange).toBeGreaterThan(0.02);
   await page.evaluate(
     (y) => scrollTo({ top: y, behavior: "instant" }),
-    travel * 0.72,
+    travel * 0.48,
   );
   await page.waitForTimeout(180);
   const full = await page.screenshot({
@@ -255,7 +255,7 @@ test("scroll progressively melts the cover, releases into pink, and reverses", a
   await page.screenshot({ path: "test-results/scroll-desktop-handoff.png" });
   await page.locator("#meet-me").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("heading", { name: "hi, I’m Amrit." }),
+    page.getByRole("heading", { name: "A bit about me." }),
   ).toBeVisible();
   await page.screenshot({ path: "test-results/scroll-desktop-meet.png" });
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
@@ -265,3 +265,57 @@ test("scroll progressively melts the cover, releases into pink, and reverses", a
   );
   expect(errors).toEqual([]);
 });
+
+for (const width of [1440, 390]) {
+  test(`portrait settles into a readable scrapbook at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+    await page.getByRole("link", { name: "scroll to meet me" }).click();
+    const more = page.getByRole("link", { name: "About me" });
+    await expect(more).toBeInViewport();
+    await expect
+      .poll(() =>
+        page
+          .locator(".portrait-intro")
+          .evaluate((el) => getComputedStyle(el).opacity),
+      )
+      .toBe("1");
+    await expect(
+      page.getByRole("heading", { name: "hi, I’m Amrit." }),
+    ).toBeFocused();
+    const card = await page.locator(".portrait-frame").boundingBox();
+    const introduction = await page.locator(".portrait-intro").boundingBox();
+    expect(card.width).toBeLessThan(width / 1.4);
+    expect(card.x).toBeGreaterThan(0);
+    expect(card.y).toBeGreaterThan(0);
+    if (width === 390) {
+      expect(card.y + card.height).toBeLessThan(introduction.y);
+      expect(introduction.y + introduction.height).toBeLessThan(844);
+    } else {
+      expect(card.x + card.width).toBeLessThan(introduction.x);
+    }
+    await page.screenshot({
+      path: `test-results/scrapbook-portrait-${width}.png`,
+    });
+    await more.click();
+    await expect(
+      page.getByRole("heading", { name: "BITS Pilani" }),
+    ).toBeInViewport();
+    await expect(page.getByText("9.27")).toBeVisible();
+    const resume = page.getByRole("link", {
+      name: /Read my résumé/,
+    });
+    const response = await page.request.get(await resume.getAttribute("href"));
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toContain("application/pdf");
+    await page
+      .locator("#meet-me")
+      .screenshot({ path: `test-results/scrapbook-notes-${width}.png` });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBe(width);
+  });
+}
