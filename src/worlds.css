@@ -300,6 +300,151 @@
 .event-world .photo-enlarge {
   background: #fbeaf0ed;
 }
+.sunbeam-event-card {
+  border: 1px solid #e1bccb;
+  border-radius: 12px;
+  background: #fbeaf0;
+  padding: clamp(22px, 4vw, 48px);
+}
+.sunbeam-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 32px;
+}
+.sunbeam-card-heading h3 {
+  font:
+    500 clamp(34px, 4vw, 48px)/1.1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  letter-spacing: -1px;
+  margin: 12px 0 0;
+}
+.sunbeam-edition {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #81505f;
+}
+.sunbeam-card-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+}
+.sunbeam-card-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+.sunbeam-card-photo figcaption {
+  font-size: 11px;
+  line-height: 1.6;
+  padding-top: 12px;
+  color: #81505f;
+}
+.sunbeam-reach {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+}
+.sunbeam-reach strong {
+  font:
+    500 52px/1 "Cormorant Garamond",
+    Georgia,
+    serif;
+  color: #8e2b51;
+}
+.sunbeam-reach > span {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sunbeam-context-copy {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 22px 0;
+  color: #75515e;
+}
+.sunbeam-facts {
+  display: grid;
+  gap: 20px;
+  border-top: 1px solid #dfb7c6;
+  padding: 22px 0 0;
+  margin: 0;
+}
+.sunbeam-facts dt {
+  font-size: 12px;
+  color: #81505f;
+  margin-bottom: 8px;
+}
+.sunbeam-facts dd {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0;
+}
+.sunbeam-story .sunbeam-memory {
+  padding: clamp(22px, 3vw, 36px);
+  border: 1px solid #d5a8b9;
+  border-radius: 16px;
+  background: #fbeaf0;
+}
+.sunbeam-story .sunbeam-memory blockquote {
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.25;
+  letter-spacing: 0;
+  margin: 16px 0;
+}
+.sunbeam-story .sunbeam-memory > p {
+  font-size: 14px;
+  line-height: 1.75;
+}
+.sunbeam-story .moment-resolution {
+  font-size: clamp(28px, 3.5vw, 40px);
+  letter-spacing: -0.5px;
+}
+.sunbeam-story .sunbeam-team-spread h4 {
+  font-size: 30px;
+  line-height: 1.2;
+}
+.event-world .chapter-heading h2 {
+  font-size: clamp(40px, 5vw, 64px);
+  letter-spacing: -1.5px;
+}
+@media (max-width: 800px) {
+  .sunbeam-card-feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sunbeam-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 500px) {
+  .sunbeam-card-heading {
+    display: block;
+    padding-bottom: 22px;
+  }
+  .sunbeam-edition {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .sunbeam-card-heading .editorial-label {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .sunbeam-card-photo figcaption {
+    font-size: 10px;
+  }
+  .sunbeam-facts {
+    gap: 20px 16px;
+  }
+  .sunbeam-facts dd {
+    font-size: 14px;
+  }
+}
 .sunbeam-moment {
   position: relative;
   height: 230svh;

@@ -423,18 +423,47 @@ export default function Chapters() {
             </p>
           </header>
           <article className="sunbeam-story" aria-labelledby="sunbeam-heading">
-            <div className="event-title-row">
-              <div>
-                <span className="editorial-label">01 / HACKCLUB</span>
-                <h3 id="sunbeam-heading">Sunbeam.</h3>
-              </div>
-              <div className="event-metadata">
-                <span className="event-role">Main organizer · Bengaluru</span>
-                <p>
-                  Scaler, Bengaluru
-                  <br />
-                  An all-girls hackathon across 40 cities worldwide.
-                </p>
+            <div className="sunbeam-event-card">
+              <header className="sunbeam-card-heading">
+                <div>
+                  <span className="editorial-label">
+                    HACKCLUB · ALL-GIRLS HACKATHON
+                  </span>
+                  <h3 id="sunbeam-heading">Sunbeam</h3>
+                </div>
+                <span className="sunbeam-edition">Bengaluru edition</span>
+              </header>
+              <div className="sunbeam-card-feature">
+                <figure className="sunbeam-card-photo">
+                  <img
+                    src="/images/events/sunbeam-community.jpeg"
+                    alt="The Sunbeam Bengaluru participants together at Scaler"
+                    width="1280"
+                    height="720"
+                    loading="lazy"
+                  />
+                  <figcaption>Sunbeam Bengaluru · Hosted at Scaler</figcaption>
+                </figure>
+                <div className="sunbeam-card-context">
+                  <p className="sunbeam-reach">
+                    <strong>40</strong>
+                    <span>cities worldwide</span>
+                  </p>
+                  <p className="sunbeam-context-copy">
+                    Girls coming together to build, across the world. Our
+                    Bengaluru edition took place at Scaler.
+                  </p>
+                  <dl className="sunbeam-facts">
+                    <div>
+                      <dt>My role</dt>
+                      <dd>Main organizer · Bengaluru</dd>
+                    </div>
+                    <div>
+                      <dt>Behind the day</dt>
+                      <dd>1.5 months of preparation</dd>
+                    </div>
+                  </dl>
+                </div>
               </div>
             </div>
             <SunbeamMoment
